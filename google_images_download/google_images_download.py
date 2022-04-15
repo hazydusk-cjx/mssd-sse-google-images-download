@@ -1154,8 +1154,7 @@ class GoogleImagesDownload:
 # code added here to attempt to implement offset correctly
 # was "count < int(arguments['offset'])" in hardikvasa code, this seems
 # to be contrary to the implementation details.
-            elif arguments['offset'] and count <= int(
-                    regexint.sub('', arguments['offset'])):
+            elif arguments['offset'] and count <= int(regexint.sub('', str(arguments['offset']))):
                 count += 1
 # page = page[end_content:]
             else:
