@@ -295,7 +295,7 @@ def user_input():
     return records
 
 
-# class googleimagesdownload:
+#class googleimagesdownload:
 class GoogleImagesDownload:
     '''google_images_download_class'''
 
@@ -946,6 +946,7 @@ class GoogleImagesDownload:
                        save_source, img_src, silent_mode, thumbnail_only,
                        format, ignore_urls):
         '''Download Images'''
+        regex = re.compile('[^a-zA-Z0-9]')
         if not silent_mode:
             if print_urls or no_download:
                 print("Image URL: " + image_url)
@@ -1026,7 +1027,7 @@ class GoogleImagesDownload:
 
                 # prefix name in image
                 if prefix:
-                    prefix = prefix + " "
+                    prefix = str(regex.sub('', prefix)) + "-"
                 else:
                     prefix = ''
 
@@ -1139,6 +1140,8 @@ class GoogleImagesDownload:
     def _get_all_items(self, image_objects, main_directory,
                        dir_name, limit, arguments):
         '''get all the items'''
+        regex = re.compile('[^a-zA-Z0-9]')
+        regexint = re.compile('[^0-9]')
         items = []
         abs_path = []
         error_count = 0
@@ -1151,7 +1154,8 @@ class GoogleImagesDownload:
 # code added here to attempt to implement offset correctly
 # was "count < int(arguments['offset'])" in hardikvasa code, this seems
 # to be contrary to the implementation details.
-            elif arguments['offset'] and count <= int(arguments['offset']):
+            elif arguments['offset'] and count <= int(
+                    regexint.sub('', arguments['offset'])):
                 count += 1
 # page = page[end_content:]
             else:
@@ -1163,14 +1167,22 @@ class GoogleImagesDownload:
 
                 # download the images
                 d_s, d_m, r_in, a_p = self.download_image(
-                    object['image_link'], object['image_format'],
-                    main_directory, dir_name, count,
-                    arguments['print_urls'], arguments['socket_timeout'],
-                    arguments['prefix'], arguments['print_size'],
-                    arguments['no_numbering'], arguments['no_download'],
+                    object['image_link'], 
+                    object['image_format'],
+                    main_directory, 
+                    dir_name, 
+                    count,
+                    arguments['print_urls'], 
+                    arguments['socket_timeout'],
+                    arguments['prefix'], 
+                    arguments['print_size'],
+                    arguments['no_numbering'], 
+                    arguments['no_download'],
                     arguments['save_source'],
-                    object['image_source'], arguments["silent_mode"],
-                    arguments["thumbnail_only"], arguments['format'],
+                    object['image_source'], 
+                    arguments["silent_mode"],
+                    arguments["thumbnail_only"], 
+                    arguments['format'],
                     arguments['ignore_urls'])
                 download_status = d_s
                 download_message = d_m
@@ -1183,8 +1195,10 @@ class GoogleImagesDownload:
                     # download image_thumbnails
                     if arguments['thumbnail'] or arguments["thumbnail_only"]:
                         d_s, d_mt = self.download_image_thumbnail(
-                            object['image_thumbnail_url'], main_directory,
-                            dir_name, return_image_name,
+                            object['image_thumbnail_url'], 
+                            main_directory,
+                            dir_name, 
+                            return_image_name,
                             arguments['print_urls'],
                             arguments['socket_timeout'],
                             arguments['print_size'],
@@ -1273,6 +1287,7 @@ class GoogleImagesDownload:
     def download_executor(self, arguments):
         '''download executor function'''
         paths = {}
+        regex = re.compile('[^a-zA-Z0-9]')
         error_count = None
         for arg in args_list:
             if arg not in arguments:
@@ -1280,7 +1295,8 @@ class GoogleImagesDownload:
 # Initialization and Validation of user arguments
         if arguments['keywords']:
             search_keyword = [
-                str(item) for item in arguments['keywords'].split(',')]
+#                str(item) for item in arguments['keywords'].split(',')]
+                str(regex.sub('', item)) for item in arguments['keywords'].split(',')]
 
         if arguments['keywords_from_file']:
             search_keyword = self.keywords_from_file(
@@ -1315,7 +1331,8 @@ class GoogleImagesDownload:
 # Additional words added to keywords
         if arguments['prefix_keywords']:
             prefix_keywords = [
-                str(sk) + " "
+#                str(sk)
+                str(regex.sub('', sk)) + " "
                 for sk in arguments['prefix_keywords'].split(',')]
         else:
             prefix_keywords = ['']
@@ -1357,7 +1374,7 @@ class GoogleImagesDownload:
 
         # If this argument is present, set the custom output directory
         if arguments['output_directory']:
-            main_directory = arguments['output_directory']
+            main_directory = str(regex.sub('', arguments['output_directory']))
         else:
             main_directory = "downloads"
 
@@ -1402,7 +1419,7 @@ class GoogleImagesDownload:
                     search_term = pky + search_keyword[i] + sky
 
                     if arguments['image_directory']:
-                        dir_name = arguments['image_directory']
+                        dir_name = str(regex.sub('', arguments['image_directory']))
                     elif arguments['no_directory']:
                         dir_name = ''
 # sub-directory
@@ -1447,7 +1464,7 @@ class GoogleImagesDownload:
                         dir_name,
                         limit,
                         arguments)
-                    paths[pky + search_keyword[i] + sky] = abs_path
+#                    paths[str(pky + search_keyword[i] + sky)] = abs_path
 
                     # dumps into a json file
                     if arguments['extract_metadata']:
