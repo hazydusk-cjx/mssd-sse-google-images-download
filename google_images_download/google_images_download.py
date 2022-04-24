@@ -295,6 +295,7 @@ def user_input():
     return records
 
 
+#class googleimagesdownload:
 class GoogleImagesDownload:
     '''google_images_download_class'''
 
@@ -451,6 +452,16 @@ class GoogleImagesDownload:
 
         return images, self.get_all_tabs(source)
 
+    # Correcting the escape characters for python2
+    def replace_with_byte(self, match):
+        '''Correcting the escape characters for python2'''
+        return chr(int(match.group(0)[1:], 8))
+
+    def repair(self, brokenjson):
+        '''up to 3 digits for byte values up to FF'''
+        invalid_escape = re.compile(r'\\[0-7]{1,3}')
+        return invalid_escape.sub(self.replace_with_byte, brokenjson)
+
     # Finding 'Next Image' from the given raw page
     def get_next_tab(self, s_args):
         '''Finding 'Next Image' from the given raw page'''
@@ -600,9 +611,8 @@ class GoogleImagesDownload:
                 newurl = ("https://www.google.com/search?" +
                           "tbs=sbi:" + urll + "&site=search&sa=X")
                 req2 = urllib.request.Request(newurl, headers=headers)
-#               resp2 = urllib.request.urlopen(req2)
-#               with urllib.request.urlopen(req2) as resp2:
-                with urllib.request.urlopen(req2):
+#                resp2 = urllib.request.urlopen(req2)
+                with urllib.request.urlopen(req2) as resp2:
                     l_3 = content.find('/search?sa=X&amp;q=')
                     l_4 = content.find(';', l_3 + 19)
                     urll2 = content[l_3 + 19:l_4]
@@ -735,8 +745,8 @@ class GoogleImagesDownload:
         safe_search_string = "&safe=active"
         # check the args and choose the URL
         if url:
-            url = url
-
+            url
+# url = url
         elif similar_images:
             print(similar_images)
             keywordem = self.similar_images(similar_images)
@@ -1144,8 +1154,7 @@ class GoogleImagesDownload:
 # code added here to attempt to implement offset correctly
 # was "count < int(arguments['offset'])" in hardikvasa code, this seems
 # to be contrary to the implementation details.
-            elif arguments['offset'] and count <= int(regexint.sub('', str(
-                    arguments['offset']))):
+            elif arguments['offset'] and count <= int(regexint.sub('', str(arguments['offset']))):
                 count += 1
 # page = page[end_content:]
             else:
@@ -1157,21 +1166,21 @@ class GoogleImagesDownload:
 
                 # download the images
                 d_s, d_m, r_in, a_p = self.download_image(
-                    object['image_link'],
+                    object['image_link'], 
                     object['image_format'],
-                    main_directory,
-                    dir_name,
+                    main_directory, 
+                    dir_name, 
                     count,
-                    arguments['print_urls'],
+                    arguments['print_urls'], 
                     arguments['socket_timeout'],
-                    arguments['prefix'],
+                    arguments['prefix'], 
                     arguments['print_size'],
-                    arguments['no_numbering'],
+                    arguments['no_numbering'], 
                     arguments['no_download'],
                     arguments['save_source'],
-                    object['image_source'],
+                    object['image_source'], 
                     arguments["silent_mode"],
-                    arguments["thumbnail_only"],
+                    arguments["thumbnail_only"], 
                     arguments['format'],
                     arguments['ignore_urls'])
                 download_status = d_s
@@ -1185,9 +1194,9 @@ class GoogleImagesDownload:
                     # download image_thumbnails
                     if arguments['thumbnail'] or arguments["thumbnail_only"]:
                         d_s, d_mt = self.download_image_thumbnail(
-                            object['image_thumbnail_url'],
+                            object['image_thumbnail_url'], 
                             main_directory,
-                            dir_name,
+                            dir_name, 
                             return_image_name,
                             arguments['print_urls'],
                             arguments['socket_timeout'],
@@ -1285,8 +1294,8 @@ class GoogleImagesDownload:
 # Initialization and Validation of user arguments
         if arguments['keywords']:
             search_keyword = [
-                str(regex.sub('', item)) for item in arguments[
-                    'keywords'].split(',')]
+#                str(item) for item in arguments['keywords'].split(',')]
+                str(regex.sub('', item)) for item in arguments['keywords'].split(',')]
 
         if arguments['keywords_from_file']:
             search_keyword = self.keywords_from_file(
@@ -1321,6 +1330,7 @@ class GoogleImagesDownload:
 # Additional words added to keywords
         if arguments['prefix_keywords']:
             prefix_keywords = [
+#                str(sk)
                 str(regex.sub('', sk)) + " "
                 for sk in arguments['prefix_keywords'].split(',')]
         else:
@@ -1408,8 +1418,7 @@ class GoogleImagesDownload:
                     search_term = pky + search_keyword[i] + sky
 
                     if arguments['image_directory']:
-                        dir_name = str(regex.sub('',
-                                                 arguments['image_directory']))
+                        dir_name = str(regex.sub('', arguments['image_directory']))
                     elif arguments['no_directory']:
                         dir_name = ''
 # sub-directory
