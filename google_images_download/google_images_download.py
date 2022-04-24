@@ -1505,8 +1505,6 @@ def main():
     records = user_input()
     total_errors = 0
     t_0 = time.time()  # start the timer
-    global req_file_format 
-    req_file_format = records[0]['format']
     for arguments in records:
 
         # Download Single Image using a URL
