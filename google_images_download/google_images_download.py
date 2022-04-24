@@ -1247,7 +1247,8 @@ class GoogleImagesDownload:
                         if not arguments["silent_mode"]:
                             if arguments['print_paths']:
                                 if isinstance(paths, str):
-                                    print(paths)
+                                    print(paths.encode(
+                                        'raw_unicode_escape').decode('utf-8'))
                         total_errors = total_errors + errors
                 return paths_agg, total_errors
             # if the calling file contains params directly
@@ -1258,7 +1259,8 @@ class GoogleImagesDownload:
                 if not arguments["silent_mode"]:
                     if arguments['print_paths']:
                         if isinstance(paths, str):
-                            print(paths)
+                            print(paths.encode(
+                                'raw_unicode_escape').decode('utf-8'))
                 return paths_agg, errors
         # for input coming from CLI
         else:
@@ -1268,7 +1270,8 @@ class GoogleImagesDownload:
             if not arguments["silent_mode"]:
                 if arguments['print_paths']:
                     if isinstance(paths, str):
-                        print(paths)
+                        print(paths.encode(
+                            'raw_unicode_escape').decode('utf-8'))
         return paths_agg, errors
 
     def download_executor(self, arguments):
