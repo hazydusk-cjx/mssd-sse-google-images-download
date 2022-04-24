@@ -532,8 +532,7 @@ class GoogleImagesDownload:
     def single_image(self, image_url):
         '''function to download single image'''
         main_directory = "downloads"
-        extensions = (".jpg", ".gif", ".png", ".bmp",
-                      ".svg", ".webp", ".ico", ".raw")
+        extensions = (".jpg", ".gif", ".png", ".bmp", ".svg", ".webp", ".ico", ".raw")
         url = image_url
         try:
             os.makedirs(main_directory)
@@ -982,9 +981,9 @@ class GoogleImagesDownload:
                 image_name = str(image_url[slash:qmark]).lower()
 
                 type = info.get_content_type()
-
-# compare picture pull from url with user request
-                if REQ_FILE_FORMAT in type:
+                
+                # compare picture pull from url with user request 
+                if req_file_format in type:
 
                     if type == "image/jpeg" or type == "image/jpg":
                         if (not image_name.endswith(
@@ -1043,8 +1042,7 @@ class GoogleImagesDownload:
     #                    output_file = open(path, 'wb')
     #                    output_file.close()
                         if save_source:
-                            list_path = (main_directory + "/" +
-                                         save_source + ".txt")
+                            list_path = main_directory + "/" + save_source + ".txt"
     #                        list_file = open(list_path, 'a')
                             with open(list_path, 'a') as list_file:
                                 list_file.write(path + '\t' + img_src + '\n')
@@ -1058,7 +1056,7 @@ class GoogleImagesDownload:
                         return_image_name = ''
                         absolute_path = ''
 
-# return image name back to calling method to use it for thumbnail downloads
+    # return image name back to calling method to use it for thumbnail downloads
                     download_status = 'success'
                     download_message = ("Completed Image ====> " +
                                         prefix + str(count) + "." + image_name)
@@ -1072,11 +1070,10 @@ class GoogleImagesDownload:
                 # return status as fail when file format does not matched
                 else:
                     download_status = 'fail'
-                    download_message = ("File format not matched with user " +
-                                        "input...trying next one...")
+                    download_message = "File format not matched with user input...trying next one..."    
                     return_image_name = ''
                     absolute_path = ''
-
+                        
             except UnicodeEncodeError as e_info:
                 download_status = 'fail'
                 download_message = ("UnicodeEncodeError on an image..." +
@@ -1522,8 +1519,8 @@ def main():
     records = user_input()
     total_errors = 0
     t_0 = time.time()  # start the timer
-    global REQ_FILE_FORMAT
-    REQ_FILE_FORMAT = records[0]['format']
+    global req_file_format 
+    req_file_format = records[0]['format']
     for arguments in records:
 
         # Download Single Image using a URL
