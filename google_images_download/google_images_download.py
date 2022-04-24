@@ -643,7 +643,13 @@ class GoogleImagesDownload:
                           "Spanish": "lang_es",
                           "Swedish": "lang_sv",
                           "Turkish": "lang_tr"}
-            lang_url = lang + lang_param[arguments['language']]
+            # python check if key in dict using "in"
+            if arguments['language'] in lang_param:
+                lang_url = lang + lang_param[arguments['language']]
+            else:
+                lang_url = ''
+                print(f"arguments['language']: '{arguments['language']}' " +
+                      "does not exists in dictionary")
         else:
             lang_url = ''
 
@@ -713,17 +719,21 @@ class GoogleImagesDownload:
                               'webp': 'webp',
                               'ico': 'ift:ico',
                               'raw': 'ift:craw'}]}
-        for _, value in params.items():
+        for key, value in params.items():
             if value[0] is not None:
-                ext_param = value[1][value[0]]
-                # counter will tell if it is first param added or not
-                if counter == 0:
-                    # add it to the built url
-                    built_url = built_url + ext_param
-                    counter += 1
+                # python check if key in dict using "in"
+                if value[0] in value[1]:
+                    ext_param = value[1][value[0]]
+                    # counter will tell if it is first param added or not
+                    if counter == 0:
+                        # add it to the built url
+                        built_url = built_url + ext_param
+                        counter += 1
+                    else:
+                        built_url = built_url + ',' + ext_param
+                        counter += 1
                 else:
-                    built_url = built_url + ',' + ext_param
-                    counter += 1
+                    print(f"arguments['{key}']: '{value[0]}' does not exists in dictionary")
         built_url = lang_url + built_url
         return built_url
 
@@ -1275,6 +1285,8 @@ class GoogleImagesDownload:
         '''download executor function'''
         paths = {}
         regex = re.compile('[^a-zA-Z0-9]')
+        regexint = re.compile('[^0-9]')
+        regex = re.compile('[^a-zA-Z0-9]')
         error_count = None
         for arg in args_list:
             if arg not in arguments:
@@ -1325,7 +1337,7 @@ class GoogleImagesDownload:
 
 # Setting limit on number of images to be downloaded
         if arguments['limit']:
-            limit = int(arguments['limit'])
+            limit = int(regexint.sub('', str(arguments['limit'])))
         else:
             limit = 100
 
@@ -1360,7 +1372,7 @@ class GoogleImagesDownload:
 
         # If this argument is present, set the custom output directory
         if arguments['output_directory']:
-            main_directory = str(regex.sub('', arguments['output_directory']))
+            main_directory = str(regex.sub('', str(arguments['output_directory'])))
         else:
             main_directory = "downloads"
 
@@ -1405,6 +1417,12 @@ class GoogleImagesDownload:
                     search_term = pky + search_keyword[i] + sky
 
                     if arguments['image_directory']:
+                        #On Linux: 
+                        #The maximum length for a file name is 255 bytes
+                        if len(arguments['image_directory'])>200:
+                            raise ValueError('You can only specify ' +
+                                             'image directory with ' +
+                                             'length up to 200 characters!')
                         dir_name = str(regex.sub('',
                                                  arguments['image_directory']))
                     elif arguments['no_directory']:
