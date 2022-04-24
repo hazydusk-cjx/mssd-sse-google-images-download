@@ -88,7 +88,7 @@ def user_input():
                             help='download images with specific format',
                             type=str, required=False,
                             choices=['jpg', 'gif', 'png',
-                                     'bmp', 'svg', 'webp', 'ico', 'raw'])
+                                     'bmp', 'svg', 'webp', 'ico'])
 
         parser.add_argument('-u', '--url',
                             help='search with google image URL',
@@ -532,7 +532,7 @@ class GoogleImagesDownload:
     def single_image(self, image_url):
         '''function to download single image'''
         main_directory = "downloads"
-        extensions = (".jpg", ".gif", ".png", ".bmp", ".svg", ".webp", ".ico", ".raw")
+        extensions = (".jpg", ".gif", ".png", ".bmp", ".svg", ".webp", ".ico")
         url = image_url
         try:
             os.makedirs(main_directory)
@@ -1010,9 +1010,6 @@ class GoogleImagesDownload:
                     elif type == "image/svg+xml":
                         if not image_name.endswith(".svg"):
                             image_name += ".svg"
-                    elif type == "image/raw":
-                        if not image_name.endswith(".raw"):
-                            image_name += ".raw"
                     else:
                         download_status = 'fail'
                         download_message = ("Invalid image format '" +
