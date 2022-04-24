@@ -981,85 +981,96 @@ class GoogleImagesDownload:
                 image_name = str(image_url[slash:qmark]).lower()
 
                 type = info.get_content_type()
-                if type == "image/jpeg" or type == "image/jpg":
-                    if (not image_name.endswith(
-                            ".jpg") and not image_name.endswith(".jpeg")):
-                        image_name += ".jpg"
-                elif type == "image/png":
-                    if not image_name.endswith(".png"):
-                        image_name += ".png"
-                elif type == "image/webp":
-                    if not image_name.endswith(".webp"):
-                        image_name += ".webp"
-                elif type == "image/gif":
-                    if not image_name.endswith(".gif"):
-                        image_name += ".gif"
-                elif type == "image/bmp" or type == "image/x-windows-bmp":
-                    if not image_name.endswith(".bmp"):
-                        image_name += ".bmp"
-                elif type == "image/x-icon":
-                    if not image_name.endswith(".ico"):
-                        image_name += ".ico"
-                elif type == "image/vnd.microsoft.icon":
-                    if not image_name.endswith(".ico"):
-                        image_name += ".ico"
-                elif type == "image/svg+xml":
-                    if not image_name.endswith(".svg"):
-                        image_name += ".svg"
+                
+                # compare picture pull from url with user request 
+                if req_file_format in type:
+
+                    if type == "image/jpeg" or type == "image/jpg":
+                        if (not image_name.endswith(
+                                ".jpg") and not image_name.endswith(".jpeg")):
+                            image_name += ".jpg"
+                    elif type == "image/png":
+                        if not image_name.endswith(".png"):
+                            image_name += ".png"
+                    elif type == "image/webp":
+                        if not image_name.endswith(".webp"):
+                            image_name += ".webp"
+                    elif type == "image/gif":
+                        if not image_name.endswith(".gif"):
+                            image_name += ".gif"
+                    elif type == "image/bmp" or type == "image/x-windows-bmp":
+                        if not image_name.endswith(".bmp"):
+                            image_name += ".bmp"
+                    elif type == "image/x-icon":
+                        if not image_name.endswith(".ico"):
+                            image_name += ".ico"
+                    elif type == "image/vnd.microsoft.icon":
+                        if not image_name.endswith(".ico"):
+                            image_name += ".ico"
+                    elif type == "image/svg+xml":
+                        if not image_name.endswith(".svg"):
+                            image_name += ".svg"
+                    else:
+                        download_status = 'fail'
+                        download_message = ("Invalid image format '" +
+                                            type + "'. Skipping...")
+                        return_image_name = ''
+                        absolute_path = ''
+                        return (download_status, download_message,
+                                return_image_name, absolute_path)
+
+                    # prefix name in image
+                    if prefix:
+                        prefix = str(regex.sub('', prefix)) + "-"
+                    else:
+                        prefix = ''
+
+                    if no_numbering:
+                        path = (main_directory + "/" +
+                                dir_name + "/" + prefix + image_name)
+                    else:
+                        path = (main_directory + "/" +
+                                dir_name + "/" + prefix + str(count)
+                                + "." + image_name)
+
+                    try:
+                        with open(path, 'wb') as output_file:
+                            output_file.write(data)
+    #                    output_file = open(path, 'wb')
+    #                    output_file.close()
+                        if save_source:
+                            list_path = main_directory + "/" + save_source + ".txt"
+    #                        list_file = open(list_path, 'a')
+                            with open(list_path, 'a') as list_file:
+                                list_file.write(path + '\t' + img_src + '\n')
+    #                        list_file.close()
+                        absolute_path = os.path.abspath(path)
+                    except OSError as e_info:
+                        download_status = 'fail'
+                        download_message = ("OSError on an image..." +
+                                            "trying next one..." +
+                                            " Error: " + str(e_info))
+                        return_image_name = ''
+                        absolute_path = ''
+
+    # return image name back to calling method to use it for thumbnail downloads
+                    download_status = 'success'
+                    download_message = ("Completed Image ====> " +
+                                        prefix + str(count) + "." + image_name)
+                    return_image_name = prefix + str(count) + "." + image_name
+
+    # image size parameter
+                    if not silent_mode:
+                        if print_size:
+                            print("Image Size: " + str(self.file_size(path)))
+
+                # return status as fail when file format does not matched
                 else:
                     download_status = 'fail'
-                    download_message = ("Invalid image format '" +
-                                        type + "'. Skipping...")
+                    download_message = "File format not matched with user input...trying next one..."    
                     return_image_name = ''
                     absolute_path = ''
-                    return (download_status, download_message,
-                            return_image_name, absolute_path)
-
-                # prefix name in image
-                if prefix:
-                    prefix = str(regex.sub('', prefix)) + "-"
-                else:
-                    prefix = ''
-
-                if no_numbering:
-                    path = (main_directory + "/" +
-                            dir_name + "/" + prefix + image_name)
-                else:
-                    path = (main_directory + "/" +
-                            dir_name + "/" + prefix + str(count)
-                            + "." + image_name)
-
-                try:
-                    with open(path, 'wb') as output_file:
-                        output_file.write(data)
-#                    output_file = open(path, 'wb')
-#                    output_file.close()
-                    if save_source:
-                        list_path = main_directory + "/" + save_source + ".txt"
-#                        list_file = open(list_path, 'a')
-                        with open(list_path, 'a') as list_file:
-                            list_file.write(path + '\t' + img_src + '\n')
-#                        list_file.close()
-                    absolute_path = os.path.abspath(path)
-                except OSError as e_info:
-                    download_status = 'fail'
-                    download_message = ("OSError on an image..." +
-                                        "trying next one..." +
-                                        " Error: " + str(e_info))
-                    return_image_name = ''
-                    absolute_path = ''
-
-# return image name back to calling method to use it for thumbnail downloads
-                download_status = 'success'
-                download_message = ("Completed Image ====> " +
-                                    prefix + str(count) + "." + image_name)
-                return_image_name = prefix + str(count) + "." + image_name
-
-# image size parameter
-                if not silent_mode:
-                    if print_size:
-                        print("Image Size: " + str(self.file_size(path)))
-
+                        
             except UnicodeEncodeError as e_info:
                 download_status = 'fail'
                 download_message = ("UnicodeEncodeError on an image..." +
